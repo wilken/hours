@@ -17,14 +17,37 @@ module Hours
 
 		property :created_at, DateTime  
 		property :updated_at, DateTime  
-
 	end  
 	Entry.raise_on_save_failure = true
 
 	DataMapper.finalize.auto_upgrade!
 
 	class API < Sinatra::Base
+
+		#Set default content type
+		before do
+		    content_type 'application/json'
+  		end
+
+  		#Setup auth helpers
+		helpers do
+
+			def protected!
+		    	unless authorized?
+		      		response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+		     	 	throw(:halt, [401, {status:"error", description: "Not authorized"}.to_json])	
+		    	end
+		  	end
+
+		  	def authorized?
+		   		@auth ||=  Rack::Auth::Basic::Request.new(request.env)
+		    	@auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['admin', 'admin']
+		  	end
+		end
+
+
 		get '/entries/:date' do
+			protected!
 			begin
 	    		d = Date.parse(params[:date])
 	    		{entries:Entry.all(date: d)}.to_json
@@ -39,13 +62,19 @@ module Hours
 		end
 
 		post '/entries/:date' do
+			protected!
 			begin
 				d = Date.parse(params[:date])
 				Entry.transaction do
+
+					#Fetch the entries array from request
+					entries = JSON.parse(request.body.read)["entries"]
+
+		    		#Delete old entries for date
 		    		Entry.all(date: d).destroy!
-		    		req=JSON.parse(request.body.read)["entries"]
-		    		puts req
-		    		req.each do |entry|
+
+		    		#Insert new entries for date
+		    		entries.each do |entry|
 			    		Entry.create(
 			    			company: 		entry["company"],
 			    			description: 	entry["description"],
