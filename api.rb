@@ -4,7 +4,7 @@ require 'json'
 
 set :public_folder, 'public'
 
-DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/entries_#{ENV['RACK_ENV']||'development'}.db")  
+DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/db/entries_#{ENV['RACK_ENV']||'development'}.db")  
 module Hours
 	class Entry  
 	  include DataMapper::Resource  
@@ -38,12 +38,13 @@ module Hours
 			d = Date.parse(params[:date])
 			Entry.transaction do
 	    		Entry.all(date: d).destroy!
-	    		params[:entries].each do |entry|
-	    			p entry
+	    		req=JSON.parse(request.body.read)["entries"]
+	    		puts req
+	    		req.each do |entry|
 		    		Entry.create(
-		    			company: 		entry[:company],
-		    			description: 	entry[:description],
-		    			hours: 			entry[:hours],
+		    			company: 		entry["company"],
+		    			description: 	entry["description"],
+		    			hours: 			entry["hours"],
 		    			date: 			d,
 		    			user: 			"mw"
 		    		)
