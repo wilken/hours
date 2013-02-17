@@ -11,12 +11,13 @@ module Hours
 		property :id, Serial  
 		property :company, String, :required => true  
 		property :description, String, :required => true
-		property :hours, Decimal, :required => true ,:precision => 10, :scale => 2
+		property :hours, Float, :required => true 
 		property :date, Date, :required => true 
 		property :user, String, :required => true 
 
 		property :created_at, DateTime  
-		property :updated_at, DateTime  
+		property :updated_at, DateTime
+
 	end  
 	Entry.raise_on_save_failure = true
 
@@ -47,7 +48,7 @@ module Hours
 
 
 		get '/entries/:date' do
-			protected!
+			#protected!
 			begin
 	    		d = Date.parse(params[:date])
 	    		{entries:Entry.all(date: d)}.to_json
@@ -62,7 +63,7 @@ module Hours
 		end
 
 		post '/entries/:date' do
-			protected!
+			#protected!
 			begin
 				d = Date.parse(params[:date])
 				Entry.transaction do

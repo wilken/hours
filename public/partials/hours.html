@@ -1,0 +1,36 @@
+	<div class="container well" style="margin-top:40px;background-color:#303030;border:none">
+		<div style="width:100%;text-align:center;margin-bottom:20px">
+			<h1 style="color:#707070">{{date}}</h1>
+		</div>
+		<form name ="fields" class="form-horizontal" style="min-height:100px">
+			<div ng-repeat="i in entries"  style="margin-bottom:5px;text-align:center">
+		 		<input type="text" ng-model="i.company" style="width:20%" hr-typeahead="getCompanies()" required></<input>
+		 		<input type="text" ng-model="i.description" style="width:29%" hr-typeahead="getDescriptions()" required></<input>
+		  		<input type="text" ng-model="i.hours"  style="width:5%" hr-positive-decimal required></<input>
+		 	 	<button class="btn btn-danger" ng-click="removeItem($index)"><i class="icon-remove icon-white"></i></button>
+			</div>
+		</form>
+			<div class="btn-group" style="width:100%;text-align:center">
+				<a href="#/hours/{{previousDate}}" class="btn btn-primary" ng-click=""><i class=" icon-chevron-left icon-white"></i> Previous</i></a>
+				<a href="" class="btn btn-primary" hr-datepicker ng-model="datepicker" data-date><i class="icon-calendar icon-white"></i> Calendar</i></a>
+				<a href="#/summary" class="btn btn-primary"><i class="icon-list icon-white"></i> Summary</i></a>
+				<a  href="#about" data-toggle="modal" class="btn btn-primary" ><i class="icon-question-sign icon-white"></i> About</i></a>
+				<a href="" class="btn btn-primary" ng-click="addItem()"><i class="icon-plus icon-white"></i> Add</i></a>
+				<a href="" class="btn btn-primary" ng-click="save()" ng-disabled="fields.$invalid"><i class="icon-ok icon-white"></i> Save</i></a>
+				<a href="#/hours/{{nextDate}}" class="btn btn-primary" ng-click="">Next <i class=" icon-chevron-right icon-white"></i></i></a>
+			</div>
+	</div>  
+	
+	<!-- Modal -->
+	<div id="about" class="modal fade hide" tabindex="-1" role="dialog" aria-labelledby="aboutLabel" aria-hidden="true">
+	  <div class="modal-header" >
+		<h3 id="aboutLabel">Hours</h3>
+	  </div>
+	  <div class="modal-body">
+		<p>Hours v2.0 time tracking &copy; 2009-2012 Unusual Labs.</p>
+		<p>Written using Angularjs, Bootstrap, Moment.js and Ruby on Rails.</p>
+	  </div>
+	  <div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+	  </div>
+	</div>

@@ -1,5 +1,6 @@
 require 'rack/test'
 require './api'
+
 describe Hours::API do
 	include Rack::Test::Methods
 
@@ -12,10 +13,9 @@ describe Hours::API do
 	      it 'returns entries for 2013-01-01' do
 	        get "/entries/2013-01-01"
 	        last_response.status.should == 200
-	        JSON.parse(last_response.body)["entries"].should_not be_empty
 	      end
 
-	      it 'returns errpr for 2013-01-0x1' do
+	      it 'returns error for 2013-01-0x1' do
 	        get "/entries/2013-01-0x1"
 	        last_response.status.should == 500
 	      end
