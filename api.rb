@@ -3,6 +3,7 @@ require 'sinatra'
 require 'json'
 
 set :public_folder, 'public'
+set :sessions, true
 
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/db/entries_#{ENV['RACK_ENV']||'development'}.db")  
 module Hours
@@ -32,26 +33,28 @@ module Hours
 
   		#Setup auth helpers
 		helpers do
-
 			def protected!
 		    	unless authorized?
-		      		response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-		     	 	throw(:halt, [401, {status:"error", description: "Not authorized"}.to_json])	
+		    		redirect '/landing.html'
 		    	end
 		  	end
 
 		  	def authorized?
-		   		@auth ||=  Rack::Auth::Basic::Request.new(request.env)
-		    	@auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['admin', 'admin']
+		  		session['user'] != nil
 		  	end
 		end
 
+		get '/' do
+			protected!
+			content_type 'text/html'
+			erb :index
+		end
 
 		get '/entries/:date' do
-			#protected!
+			protected!
 			begin
 	    		d = Date.parse(params[:date])
-	    		{entries:Entry.all(date: d)}.to_json
+	    		{entries:Entry.all(date: d, user: session['user'])}.to_json
 	    	rescue
 	    		begin
 		    		d = Date.parse("#{params[:date]}-01")
@@ -63,7 +66,7 @@ module Hours
 		end
 
 		post '/entries/:date' do
-			#protected!
+			protected!
 			begin
 				d = Date.parse(params[:date])
 				Entry.transaction do
@@ -81,7 +84,7 @@ module Hours
 			    			description: 	entry["description"],
 			    			hours: 			entry["hours"],
 			    			date: 			d,
-			    			user: 			"mw"
+			    			user: 			session['user']
 			    		)
 		    		end
 			   		{status:"OK"}.to_json
@@ -89,6 +92,25 @@ module Hours
 	    	rescue Exception => e
 				[500, {status:"error", description: e}.to_json]
 	    	end
+		end
+
+		get '/login' do
+			content_type 'text/html'
+    		<<-HTML
+    		<ul>
+     			<li><a href='/auth/google_oauth2'>Sign in with Google</a></li>
+    		</ul>
+    		HTML
+  		end
+
+		get '/auth/:provider/callback' do
+			session['user'] = request.env['omniauth.auth'].info.email
+			redirect '/'
+		end
+  
+		get '/auth/failure' do
+    		content_type 'text/plain'
+    		request.env['omniauth.auth'].to_hash.inspect rescue "No Data"
 		end
 	end
 end
