@@ -21,6 +21,12 @@ hoursApp.config(function($routeProvider){
 	.otherwise({redirectTo: '/hours'})
 })
 
+hoursApp.run(function($rootScope, $http) {
+	$rootScope.companies = ['KMD','BEC','TopDanmark']
+	$rootScope.descriptions = ['cool','great','radical']
+	console.log('data set')
+})
+
 hoursApp.directive('hrPositiveDecimal', function($parse) {
 	return {
 		restrict:'A',
@@ -100,6 +106,10 @@ hoursApp.controller('hoursCtrl', function($scope, $routeParams,$location, $http	
 			$scope.entries = [{"company":"","date":$scope.ajaxDate,"description":"","hours":""}]
 		}
 	}
+	$scope.delete = function(){	
+		$scope.entries = []
+		this.save()
+	}
 	$scope.save = function() {
 		var save=[]
 		for(var i=0;i<$scope.entries.length;i++){
@@ -133,10 +143,10 @@ hoursApp.controller('hoursCtrl', function($scope, $routeParams,$location, $http	
 		}
 	}
 	$scope.getCompanies = function() {
-		return ["PHP"]
+		return $scope.companies
 	}
 	$scope.getDescriptions = function() {
-		return ["Automated testing"]
+		return $scope.descriptions
 	}
 })
 
