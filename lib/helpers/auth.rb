@@ -1,5 +1,5 @@
 module Hours
-	module Authorization
+	module AuthHelpers
   		#Setup auth helpers
 		def protected!
 	    	unless authorized?

@@ -1,9 +1,7 @@
 module Hours
 	class API < Sinatra::Base
-		helpers Hours::Authorization
-
-		set :root,'.'
-		set :views, 'views'
+		use Hours::AuthRoute
+		use Hours::EntriesRoute
 
 		#Set default content type
 		before do

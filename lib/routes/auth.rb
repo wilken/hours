@@ -1,5 +1,5 @@
 module Hours
-	class API < Sinatra::Base
+	class AuthRoute < Sinatra::Base
 		get '/login' do
 			content_type 'text/html'
     		<<-HTML
