@@ -1,5 +1,6 @@
 module Hours
 	class API < Sinatra::Base
+		helpers Hours::AuthHelpers
 		use Hours::AuthRoute
 		use Hours::EntriesRoute
 
