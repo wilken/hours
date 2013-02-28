@@ -12,7 +12,7 @@ module Hours
 	    		begin
 					#If date is on the form YYYY-MM, for use in summary queries
 		    		d = Date.parse("#{params[:date]}-01")
-		    		{entries:Entry.all(:date.gte => d, :date.lt => d >> 1)}.to_json
+		    		{entries:Entry.all(:date.gte => d, :date.lt => d >> 1, user: session['user'])}.to_json
 		    	rescue Exception => e
 		    		# If date is malformed
 					[500, {status:"error", description: e}.to_json]
