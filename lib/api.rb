@@ -4,6 +4,7 @@ module Hours
 		use Hours::AuthRoute
 		use Hours::EntriesRoute
 
+
 		#Set default content type
 		before do
 		    content_type 'application/json'

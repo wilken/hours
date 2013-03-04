@@ -16,8 +16,10 @@ use OmniAuth::Builder do
 end 
 
 Dir[File.dirname(__FILE__) + '/config/**/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/lib/**/*.rb'].each {|file| require file }
-$:<<'.'
-require 'api'
+Dir[File.dirname(__FILE__) + '/lib/helpers/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/lib/model/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/lib/routes/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
 
-run Hours::API.new
+p Hours::API.set(:root,Dir[File.dirname(__FILE__)])
+run Hours::API
