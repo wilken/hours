@@ -85,25 +85,32 @@ hoursApp.controller('summaryCtrl', function($scope, $routeParams){
 hoursApp.controller('hoursCtrl', function($scope, $routeParams,$location, $http	){
 	var date = typeof $routeParams.date == 'undefined'  ? new moment() : moment($routeParams.date,"YYYY-MM-DD")
 
-	$scope.ajaxDate = date.format("YYYY-MM-DD")
-	$scope.date = date.format("dddd [the] Do [of] MMMM, YYYY")
+	$scope.prettyDate = date.format("dddd [the] Do [of] MMMM, YYYY")
+
+	$scope.date = date.format("YYYY-MM-DD")
 	$scope.nextDate = date.add('days', 1).format("YYYY-MM-DD")
 	$scope.previousDate = date.subtract('days', 2).format("YYYY-MM-DD")
 	
-	$scope.entries = [{"company":"","date":$scope.ajaxDate,"description":"","hours":""}]
-	$http.get('entries/' + $scope.ajaxDate).success(function(data) {
-		console.log(data.entries.length )
-		console.log(data.entries)
-  		$scope.entries = data.entries.length!=0 ? data.entries : [{"company":"","date":$scope.ajaxDate,"description":"","hours":""}];
-	});
+	$scope.entries = [{"company":"","date":$scope.date,"description":"","hours":""}]
+
+	$scope.loading = true
+	$http.get('entries/' + $scope.date)
+		.success(function(data) {
+  			$scope.entries = data.entries.length!=0 ? data.entries : [{"company":"","date":$scope.date,"description":"","hours":""}];
+			$scope.loading = false
+		})
+		.error(function(error){
+	    	$scope.error = error;
+			$scope.loading = false
+		});
 
 	$scope.addItem = function() {
-		$scope.entries.push({"company":"","date":$scope.ajaxDate,"description":"","hours":""})
+		$scope.entries.push({"company":"","date":$scope.date,"description":"","hours":""})
 	}
 	$scope.removeItem = function($index) {
 		$scope.entries.splice($index,1)
 		if($scope.entries.length==0) {
-			$scope.entries = [{"company":"","date":$scope.ajaxDate,"description":"","hours":""}]
+			$scope.entries = [{"company":"","date":$scope.date,"description":"","hours":""}]
 		}
 	}
 	$scope.delete = function(){	
@@ -119,7 +126,7 @@ hoursApp.controller('hoursCtrl', function($scope, $routeParams,$location, $http	
 			}
 		}
 		$http({
-    		url: "entries/" + $scope.ajaxDate,
+    		url: "entries/" + $scope.date,
 		    dataType: "json",
     		method: "POST",
     		data: '{"entries" :'+JSON.stringify($scope.entries,function(key,value){
