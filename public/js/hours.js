@@ -125,6 +125,7 @@ hoursApp.controller('hoursCtrl', function($scope, $routeParams,$location, $http	
 				save.push($scope.entries[i])
 			}
 		}
+		$scope.loading = true
 		$http({
     		url: "entries/" + $scope.date,
 		    dataType: "json",
@@ -138,8 +139,10 @@ hoursApp.controller('hoursCtrl', function($scope, $routeParams,$location, $http	
     		}
 		}).success(function(response){
 			console.log(response)
+			$scope.loading = false
  		}).error(function(error){
  			console.log(error)
+			$scope.loading = false
  		});
 
 		if(save.length == 0) {
